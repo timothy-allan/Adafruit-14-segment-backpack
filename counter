@@ -1,0 +1,95 @@
+
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include "Adafruit_LEDBackpack.h"
+
+Adafruit_AlphaNum4 alpha4 = Adafruit_AlphaNum4();
+
+int segNo;
+
+int n[10] = {
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+
+};
+
+
+void setup() {
+
+  Serial.begin(115200);
+  alpha4.begin(0x70);  // pass in the address
+
+  alpha4.clear();
+  alpha4.writeDisplay();
+
+  randomSeed(analogRead(0));
+}
+
+
+void loop() {
+
+  int i = 9999;
+
+   while (i >= 0) {
+
+    // digit 1***
+    if (i < 10) {
+      segNo = 0; 
+      alpha4.writeDigitAscii(segNo, n[i] + 1);
+
+      segNo = 1;
+      alpha4.writeDigitRaw(segNo, 0x0);
+
+    }
+
+    // digit 11**
+    else if (i > 9 && i < 100) {
+      segNo = 0;
+      alpha4.writeDigitAscii( segNo, n[ i / 10 ] );
+
+      segNo = 1;
+      alpha4.writeDigitAscii( segNo, n[ i % 10 ]);
+    }
+
+    // digit 111*
+    else if ( i > 99 && i < 1000)  {
+      segNo = 0;
+      alpha4.writeDigitAscii( segNo, n[ i / 100 ] );
+
+      segNo = 1;
+      alpha4.writeDigitAscii( segNo, n[ (i / 10) % 10 ] );
+
+      segNo = 2;
+      alpha4.writeDigitAscii( segNo, n[ i % 10 ] );
+
+    }
+
+    // digit 1111
+    else if ( i > 999 && i < 10000)  {
+      segNo = 0;
+      alpha4.writeDigitAscii( segNo, n[ i / 1000 ] );
+
+      segNo = 1;
+      alpha4.writeDigitAscii( segNo, n[ (i / 100) % 10 ] );
+
+      segNo = 2;
+      alpha4.writeDigitAscii( segNo, n[ (i / 10) % 10 ] );
+
+      segNo = 3;
+      alpha4.writeDigitAscii( segNo, n[ i % 10 ] );
+    }
+
+    alpha4.writeDisplay();
+
+    delay(20);
+
+    i--;
+    }
+
+
+
+
+}
+
+
+
+
